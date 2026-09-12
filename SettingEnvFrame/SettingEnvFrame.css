@@ -1,0 +1,149 @@
+/* ============================
+   全体レイアウト
+============================ */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Yu Gothic", "Meiryo", sans-serif;
+  background-color: #f5f5f5;
+}
+
+[area-header],
+[area-middle],
+[area-footer] {
+  width: 95%;
+  max-width: 600px;
+  margin: 20px auto;
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* ============================
+   Header
+============================ */
+[area-header] {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.header-box {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+  justify-content: space-between;
+}
+
+.header-box h2 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: bold;
+  text-align: center;
+  flex: 1;
+}
+
+.btn-back {
+  padding: 8px 16px;
+  background-color: #d9534f;   /* ThesisEditionFrame と同じ赤 */
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.btn-back:hover {
+  background-color: #c9302c;
+}
+
+#btnSave {
+  padding: 8px 16px;
+  background-color: #5cb85c;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+#btnSave:hover {
+  background-color: #449d44;
+}
+
+/* ============================
+   Middle
+============================ */
+[area-middle] {
+  display: flex;
+  justify-content: center;
+}
+
+.middle-box {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.middle-box .row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.middle-box .row label {
+  width: 140px;        /* ラベル幅を固定 */
+  font-weight: bold;
+  text-align: right;
+}
+
+.middle-box .row input {
+  flex: 1;              /* テキストボックスは残り幅いっぱい */
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.middle-box .row .hint {
+  width: 140px;
+  font-size: 12px;
+  color: #999;
+}
+
+.btn-pick-folder {
+  padding: 6px 14px;
+  background-color: #4a90e2;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.btn-pick-folder:hover {
+  background-color: #357ABD;
+}
+
+/* ============================
+   Footer（バックアップ）
+============================ */
+[area-footer] {
+  display: flex;
+  justify-content: center;
+}
+
+.footer-box {
+  display: flex;
+  justify-content: center;
+}
+
+.btn-backup {
+  padding: 10px 20px;
+  background-color: #ff9800;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+}
+.btn-backup:hover {
+  background-color: #e68900;
+}
