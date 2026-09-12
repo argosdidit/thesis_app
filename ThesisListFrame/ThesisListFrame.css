@@ -1,0 +1,263 @@
+/* 全体レイアウト */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Yu Gothic", "Meiryo", sans-serif;
+  background-color: #f5f5f5;
+}
+
+/* コンテンツ領域 */
+[area-contents] {
+  width: 95%;
+  margin: 20px auto;
+}
+
+/* ============================
+   ① ヘッダー
+   ============================ */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #ffffff;
+  padding: 15px 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.header h2 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: bold;
+}
+
+.btnSetting {
+  padding: 8px 16px;
+  background-color: #4a90e2;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.btnSetting:hover {
+  background-color: #357ABD;
+}
+
+/* ============================
+   検索バー・表示切替
+   ============================ */
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 20px;
+  background-color: #ffffff;
+  padding: 15px 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.search-input {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 46px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: .2s;
+  border-radius: 24px;
+}
+
+.toggle-slider::before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: .2s;
+  border-radius: 50%;
+}
+
+.toggle-switch input:checked + .toggle-slider {
+  background-color: #5cb85c;
+}
+
+.toggle-switch input:checked + .toggle-slider::before {
+  transform: translateX(22px);
+}
+
+.toggle-label {
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+/* 非表示の論文の行を薄く表示して区別する */
+.row-hidden {
+  color: #999;
+  background-color: #f7f7f7;
+}
+
+/* ============================
+   ② グリッドビュー（論文一覧）
+   ============================ */
+.list-area {
+  margin-top: 20px;
+  background-color: #ffffff;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* 表全体の罫線を強める */
+.thesis-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  border: 2px solid #000;   /* ★ 外枠を太く */
+}
+
+/* ヘッダー行の罫線を強める */
+.thesis-table th,
+.thesis-table td {
+  padding: 6px 8px;
+  border-bottom: 1px solid #000;
+  border-right: 1px solid #000;
+  vertical-align: top;
+}
+
+/* 最後の列の右線を消す（見た目調整） */
+.thesis-table th:last-child,
+.thesis-table td:last-child {
+  border-right: none;
+}
+
+/* no-data の表示を罫線の中で中央に */
+.no-data td {
+  text-align: center;
+  font-size: 22px;
+  font-weight: bold;
+  padding: 40px 0;
+  color: #666;
+}
+
+/* ============================
+   カラム毎の統一
+   ============================ */
+
+/* 論文ID（1列目） */
+.thesis-table td:nth-child(1),
+.thesis-table th:nth-child(1) {
+  text-align: center;
+}
+
+/* 発行年（5列目） */
+.thesis-table td:nth-child(5),
+.thesis-table th:nth-child(5) {
+  text-align: center;
+}
+
+/* 発行月（6列目） */
+.thesis-table td:nth-child(6),
+.thesis-table th:nth-child(6) {
+  text-align: center;
+}
+
+/* 発行日（7列目） */
+.thesis-table td:nth-child(7),
+.thesis-table th:nth-child(7) {
+  text-align: center;
+}
+
+/* 編集ボタン（9列目） */
+.thesis-table td:nth-child(9),
+.thesis-table th:nth-child(9) {
+  text-align: center;
+}
+
+
+
+/* 編集ボタン */
+.btnEdit {
+  padding: 6px 12px;
+  background-color: #ff9800;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.btnEdit:hover {
+  background-color: #e68900;
+}
+
+/* ============================
+   論文ゼロ時のメッセージ
+   ============================ */
+
+
+.no-data td {
+  text-align: center;
+  font-size: 26px;
+  font-weight: bold;
+  padding: 80px 0;
+  color: #666;
+}
+
+
+/* ============================
+   ③ フッター（中央揃えに変更）
+   ============================ */
+.footer {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;   /* ★ 中央揃え */
+  gap: 20px;
+}
+
+.btnLogout,
+.btnAdd {
+  padding: 10px 18px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.btnLogout {
+  background-color: #d9534f;
+  color: white;
+}
+.btnLogout:hover {
+  background-color: #c9302c;
+}
+
+.btnAdd {
+  background-color: #5cb85c;
+  color: white;
+}
+.btnAdd:hover {
+  background-color: #449d44;
+}
