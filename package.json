@@ -1,0 +1,14 @@
+{
+  "name": "thesis-app",
+  "version": "1.0.0",
+  "description": "Thesis management app (PostgreSQL / Render deployment)",
+  "main": "ThesisServer.js",
+  "scripts": {
+    "start": "node ThesisServer.js"
+  },
+  "dependencies": {
+    "dotenv": "^17.3.1",
+    "express": "^4.21.2",
+    "pg": "^8.13.1"
+  }
+}
