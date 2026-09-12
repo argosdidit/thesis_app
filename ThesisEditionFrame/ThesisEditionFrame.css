@@ -1,0 +1,300 @@
+/* ============================
+   全体レイアウト
+============================ */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Yu Gothic", "Meiryo", sans-serif;
+  background-color: #f5f5f5;
+}
+
+[area-header],
+[area-middle],
+[area-bottom] {
+  width: 95%;
+  margin: 20px auto;
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Header を中央揃え */
+[area-header] {
+  display: flex;
+  justify-content: center;   /* ★ 横方向中央揃え */
+  align-items: center;        /* ★ 縦方向中央揃え */
+}
+
+/* Middle 全体を中央揃え */
+[area-middle] {
+  display: flex;
+  justify-content: center;   /* ★ 左右ブロックを中央寄せ */
+  gap: 20px;
+}
+
+/* ============================
+   Header
+============================ */
+.header-box {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.header-box label {
+  font-weight: bold;
+}
+
+.header-box input {
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.header-box .wide {
+  width: 400px;
+}
+
+.btn-back {
+  padding: 8px 16px;
+  background-color: #d9534f;   /* 保存ボタンと同じ赤 */
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-right: 20px;
+}
+
+.btn-back:hover {
+  background-color: #c9302c;   /* 保存ボタンと同じ hover 赤 */
+}
+
+
+#btnSave {
+  padding: 8px 16px;
+  background-color: #5cb85c;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+#btnSave:hover {
+  background-color: #449d44;
+}
+
+/* ============================
+   表示/非表示トグル
+============================ */
+.toggle-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 46px;
+  height: 24px;
+}
+
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: .2s;
+  border-radius: 24px;
+}
+
+.toggle-slider::before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: .2s;
+  border-radius: 50%;
+}
+
+.toggle-switch input:checked + .toggle-slider {
+  background-color: #5cb85c;   /* 保存ボタンと同じ緑 */
+}
+
+.toggle-switch input:checked + .toggle-slider::before {
+  transform: translateX(22px);
+}
+
+.toggle-label {
+  font-weight: bold;
+  min-width: 34px;   /* 「表示」「非表示」で幅がガタつかないよう固定 */
+}
+
+/* ============================
+   Middle (Left + Right)
+============================ */
+[area-middle] {
+  display: flex;
+  gap: 20px;
+}
+
+/* 左側 */
+.middle-left-box {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.middle-left-box label {
+  font-weight: bold;
+}
+
+.middle-left-box input {
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+/* 右側 */
+.middle-right-box {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.middle-right-box label {
+  font-weight: bold;
+}
+
+.middle-right-box input {
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+
+/* Middle Left の各行を横並びにする */
+.middle-left-box .row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.middle-left-box .row label {
+  width: 120px;        /* ラベル幅を固定 */
+  font-weight: bold;
+}
+
+.middle-left-box .row input {
+  flex: 1;             /* テキストボックスは残り幅いっぱい */
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.middle-left-box .row select {
+  flex: 1;
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background-color: #ffffff;
+}
+
+/* Middle Right の各行を横並びにする */
+.middle-right-box .row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.middle-right-box .row label {
+  width: 120px;
+  font-weight: bold;
+}
+
+.middle-right-box .row input {
+  flex: none;
+  width: 600px;        /* ★ ここを好きな幅に変更する */
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+
+/* ============================
+   Bottom
+============================ */
+.bottom-box {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.bottom-box label {
+  font-weight: bold;
+}
+
+.bottom-box textarea {
+  width: 100%;
+  height: 120px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  resize: vertical;
+}
+
+.bottom-box input {
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+/* 保存パス欄 + フォルダ選択ボタン */
+.path-row {
+  display: flex;
+  gap: 10px;
+}
+
+.path-row input {
+  flex: 1;
+}
+
+.btn-pick-file {
+  padding: 6px 14px;
+  background-color: #4a90e2;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.btn-pick-file:hover {
+  background-color: #357ABD;
+}
+
+.btn-open-file {
+  padding: 6px 14px;
+  background-color: #ff9800;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.btn-open-file:hover {
+  background-color: #e68900;
+}
