@@ -1,0 +1,50 @@
+/* ログインボックス */
+.login-box {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 300px;
+  padding: 20px;
+  background: rgba(255,255,255,0.9);
+  border-radius: 10px;
+  text-align: center;
+}
+
+.imgTitle{
+  justify-content: center;
+  margin: auto;
+}
+
+/* 入力欄 */
+.login-input {
+  padding: 8px;
+  border-radius: 5px;
+  border: 1px solid #aaa;
+}
+
+/* ボタン */
+.BtnLogin {
+  padding: 8px;
+  border: none;
+  background: #8e44ad;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.BtnReset {
+  padding: 8px;
+  border: none;
+  background: #ff1515;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.BtnLogin:hover {
+  background: #6c3483;
+}
