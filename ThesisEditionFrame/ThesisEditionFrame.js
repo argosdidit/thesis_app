@@ -195,7 +195,8 @@ const ThesisEditionFrame = (() => {
       
       <label>論文のファイル</label>
   <div class="path-row">
-    <input type="text" id="txtSavedThesisPath" readonly>
+    <input type="text" id="txtSavedThesisPath" readonly placeholder="「選択」で論文ファイルをアップロードしてください">
+    <input type="file" id="fileThesisUpload" accept="application/pdf" style="display:none;">
     <button type="button" id="btnPickFile" class="btn-pick-file">選択</button>
     <button type="button" id="btnOpenThesis" class="btn-open-file">論文を開く</button>
   </div>
@@ -204,12 +205,19 @@ const ThesisEditionFrame = (() => {
       `;
       areaBottom.insertAdjacentHTML("beforeend", html);
 
-      // 「選択」ボタン：サーバー経由でMacのファイル選択ダイアログを開き、絶対パスを取得
+      // 「選択」ボタン：ブラウザ標準のファイル選択画面（自分のPC）を開く
       document.getElementById("btnPickFile").addEventListener("click", () => {
-        func.pickFile("txtSavedThesisPath");
+        document.getElementById("fileThesisUpload").click();
       });
 
-      // 「論文を開く」ボタン：入力欄の絶対パスをサーバー経由でデフォルトアプリで開く
+      // ファイルが選ばれたら、その中身をサーバーへアップロードする
+      document.getElementById("fileThesisUpload").addEventListener("change", (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        func.uploadThesisFile(file);
+      });
+
+      // 「論文を開く」ボタン：サーバーに保存済みのファイルを新しいタブで表示
       document.getElementById("btnOpenThesis").addEventListener("click", () => {
         func.openFile("txtSavedThesisPath");
       });
@@ -217,24 +225,46 @@ const ThesisEditionFrame = (() => {
       return this;
     },
     // ============================
-    // ファイル選択（サーバー経由でネイティブダイアログを開く）
+    // ファイルアップロード
+    //   ブラウザ標準の <input type="file"> は自分のPCのファイル選択画面を開く
+    //   （サーバーを経由しないため、ローカルでもRenderでも同じように動く）
+    //   選んだファイルの中身をサーバーへ送り、サーバー側（＝Macで動かしている場合は
+    //   そのMac自身）が SettingEnvFrame で設定済みの保存先フォルダへ書き込む
     // ============================
-    pickFile(targetInputId) {
-      fetch("/api/pick-file")
+    uploadThesisFile(file) {
+      const thesisID = document.getElementById("txtThesisID").value;
+
+      if (!thesisID) {
+        alert("論文IDが取得できていません。少し待ってから再度お試しください。");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("userName", userName);
+      formData.append("thesisID", thesisID);
+
+      fetch("/api/thesis/upload-file", {
+        method: "POST",
+        body: formData
+      })
       .then(res => res.json())
       .then(data => {
         if (data.result === "OK") {
-          document.getElementById(targetInputId).value = data.path;
+          document.getElementById("txtSavedThesisPath").value = data.path;
         }
-        // ★ キャンセル時は何もしない
+        else
+        {
+          alert("ファイルのアップロードに失敗しました: " + (data.reason || ""));
+        }
       })
       .catch(err => {
         console.error(err);
-        alert("ファイル選択でエラーが発生しました");
+        alert("ファイルのアップロードでエラーが発生しました");
       });
     },
     // ============================
-    // 選択済みファイルをデフォルトアプリで開く
+    // 保存済みファイルを新しいタブで開く
     // ============================
     openFile(targetInputId) {
       const filePath = document.getElementById(targetInputId).value.trim();
@@ -244,21 +274,7 @@ const ThesisEditionFrame = (() => {
         return;
       }
 
-      fetch("/api/open-file", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ path: filePath })
-      })
-      .then(res => res.json())
-      .then(data => {
-        if (data.result !== "OK") {
-          alert("論文を開けませんでした。ファイルが見つからないか、移動された可能性があります。");
-        }
-      })
-      .catch(err => {
-        console.error(err);
-        alert("論文を開けませんでした。");
-      });
+      window.open(`/api/thesis/file?path=${encodeURIComponent(filePath)}`, "_blank");
     },
     settingIcon() {
       const favicon = document.querySelector('#dynamic-favicon');
