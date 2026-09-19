@@ -8,6 +8,9 @@ const path = require("path");
 const { Client } = require("pg");
 const { execFile } = require("child_process");
 const fs = require("fs");
+const multer = require("multer");
+
+const upload = multer({ storage: multer.memoryStorage() });   // ★ 論文ファイルアップロード用
 
 const app = express();
 const PORT = process.env.PORT || 3001;   // ★ Renderは実行時にPORTを注入するため、まずそちらを優先
@@ -557,15 +560,15 @@ async function performBackup(userName, backupPath) {
 // バックアップ実行API（現状は SettingEnvFrame のボタンから呼ばれる）
 //
 // ★★★ 重要な注意 ★★★
-// この API と、この下にある pick-folder / pick-file / open-file の3つは
+// この API と、この下にある pick-folder の2つは
 // 「サーバーとブラウザが同一PC上にある」ことを前提にしたローカル専用機能です。
+// （論文ファイルの選択・表示については、<input type="file"> によるアップロード方式に
+// 切り替え済みのため、この制約を受けません）
 // Renderにデプロイすると、サーバーはRenderのLinuxコンテナ上で動作し、
 // ブラウザ（ユーザーのMac）とは別マシンになるため、これらは機能しなくなります
 // （osascriptはLinux上に存在しませんし、そもそも「ユーザーのMacの画面に
 // ダイアログを出す」ことがサーバー側からはできません）。
-// 今回はDBのPostgreSQL移行のみを目的としているため機能はそのまま残していますが、
-// 本番運用に進める際は、この部分の代替設計（例：ブラウザの<input type="file">で
-// アップロードし、クラウドストレージに保存する方式への切り替え）が別途必要です。
+// 本番運用に進める際は、この部分の代替設計が別途必要です。
 app.post("/api/backup", async (req, res) => {
   const { UserName, BackupPath } = req.body;
 
@@ -580,7 +583,71 @@ app.post("/api/backup", async (req, res) => {
 
 
 // ============================
+// ★ 論文ファイルのアップロード（ThesisEditionFrame用）
+//   ブラウザ標準の <input type="file"> でユーザー自身のPCの
+//   ファイル選択画面を開き、選んだファイルの中身をここへ送ってもらう。
+//   保存先は SettingEnvFrame で設定済みの「論文保存パス」を使う。
+// ============================
+app.post("/api/thesis/upload-file", upload.single("file"), async (req, res) => {
+  try {
+    const { userName, thesisID } = req.body;
+
+    if (!req.file) {
+      return res.json({ result: "NG", reason: "file is empty" });
+    }
+
+    const userResult = await client.query(
+      "SELECT settingsavedpath FROM tbluser WHERE username = $1",
+      [userName]
+    );
+
+    if (userResult.rows.length === 0) {
+      return res.json({ result: "NG", reason: "User not found" });
+    }
+
+    const saveDir = userResult.rows[0].settingsavedpath;
+
+    if (!saveDir) {
+      return res.json({ result: "NG", reason: "SettingSavedPath is not configured" });
+    }
+
+    // ★ ファイル名の衝突を避けるため、論文IDをprefixにする
+    const safeOriginalName = req.file.originalname.replace(/[\\/:*?"<>|]/g, "_");
+    const fileName = `${thesisID}_${safeOriginalName}`;
+    const fullPath = path.join(saveDir, fileName);
+
+    fs.writeFileSync(fullPath, req.file.buffer);
+
+    res.json({ result: "OK", path: fullPath, fileName });
+
+  } catch (err) {
+    console.error("upload-file error:", err);
+    res.json({ result: "NG", reason: "Server error" });
+  }
+});
+
+
+// ============================
+// ★ 保存済み論文ファイルをブラウザへ返す（「論文を開く」ボタン用）
+// ============================
+app.get("/api/thesis/file", (req, res) => {
+  const filePath = req.query.path;
+
+  if (!filePath) {
+    return res.status(400).json({ result: "NG", reason: "path is empty" });
+  }
+
+  if (!fs.existsSync(filePath)) {
+    return res.status(404).json({ result: "NG", reason: "File not found" });
+  }
+
+  res.sendFile(filePath);
+});
+
+
+// ============================
 // ★ フォルダ選択ダイアログ（Mac: AppleScript経由・ローカル専用）
+//   SettingEnvFrame の「論文保存パス」「データバックアップパス」で使用
 // ============================
 app.get("/api/pick-folder", (req, res) => {
   const script = 'POSIX path of (choose folder with prompt "保存先フォルダを選択してください")';
@@ -591,42 +658,6 @@ app.get("/api/pick-folder", (req, res) => {
       return res.json({ result: "CANCEL" });
     }
     res.json({ result: "OK", path: stdout.trim() });
-  });
-});
-
-
-// ============================
-// ★ ファイル選択ダイアログ（Mac: AppleScript経由・ローカル専用）
-// ============================
-app.get("/api/pick-file", (req, res) => {
-  const script = 'POSIX path of (choose file with prompt "論文ファイルを選択してください")';
-
-  execFile("osascript", ["-e", script], (err, stdout) => {
-    if (err) {
-      // ★ ユーザーがキャンセルした場合もここに来る
-      return res.json({ result: "CANCEL" });
-    }
-    res.json({ result: "OK", path: stdout.trim() });
-  });
-});
-
-
-// ============================
-// ★ 選択済みファイルをデフォルトアプリで開く（Mac: openコマンド・ローカル専用）
-// ============================
-app.post("/api/open-file", (req, res) => {
-  const { path: filePath } = req.body;
-
-  if (!filePath) {
-    return res.json({ result: "NG", reason: "path is empty" });
-  }
-
-  execFile("open", [filePath], (err) => {
-    if (err) {
-      console.error("open-file error:", err);
-      return res.json({ result: "NG", reason: "File not found or cannot be opened" });
-    }
-    res.json({ result: "OK" });
   });
 });
 
